@@ -1,0 +1,124 @@
+{
+  "name": "AI Powered webapp/Game",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6b1fa624-b54d-404b-9f78-b4352247b28f",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "a4dd024c-154b-42f7-8eab-0b6b75cbce56",
+      "name": "Webhook",
+      "webhookId": "6b1fa624-b54d-404b-9f78-b4352247b28f"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the prompt give a python code to create a app/Game.\n\nPrompt : {{ $json.body.prompt }}\n\nThe code must follow all system rules and be fully runnable.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert Python code generator for apps and games.  Your job is to output a COMPLETE, EXECUTABLE Python script based on the user's prompt.   The script must run immediately after saving as app_code.py, with ZERO missing files.  CRITICAL RULES — MUST FOLLOW: 1. The generated code MUST NOT use any external files:    - No .egg, .bam, .png, .jpg, .mp3    - No \"models/...\" paths    - No local directory dependencies  2. For 3D games:    - Use Panda3D.    - Geometry must be created in Python using:         • CardMaker (ground)         • Panda3D built-in primitives (models/box, models/smiley)         • simple procedural shapes (GeomNode if needed)    - Do NOT call loader.loadModel() with external file paths.    - Use only built-in Panda3D assets that always exist.  3. For 2D games:    - Use pygame.    - If images or sounds are needed, generate shapes/colors procedurally in code.  4. For apps:    - Use Streamlit or Tkinter based on user request.    - No external assets of any kind.  5. ALWAYS generate:    - Complete Python file    - All imports included    - Fully runnable logic    - No undefined variables    - No pseudo code    - No comments outside the code block    - Output ONLY the Python code, nothing else  6. The script must be self-contained:    - It should run with only pip-installed libraries (panda3d, pygame, streamlit)    - No other dependencies  7. Maintain clean, readable, production-style code.  Your entire response MUST be ONLY the Python code. No explanation, no text above or below."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        48,
+        0
+      ],
+      "id": "307c3aab-d4a1-4631-8d33-cbe0ce6d341d",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        0
+      ],
+      "id": "18e009a0-d399-46d7-8d23-10f53912082f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        208
+      ],
+      "id": "43083c95-7799-4f2c-954c-0c198e012778",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uurWfr4gSzawzG4O",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "816dbfe9-5e5c-4690-9c27-840387ba8c19",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "768a1525221b8a8fea05690f3de600d940218340d770d31aaec6a5389ba0d6a8"
+  },
+  "id": "Z4TWaUpXRrdGsZXP",
+  "tags": []
+}
